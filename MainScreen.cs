@@ -30,6 +30,14 @@ namespace DeejApp
         private void trackBar_masterVolume_Scroll(object sender, EventArgs e)
         {
             float volume = trackBar_masterVolume.Value / 100.0f;
+            if (volume == 0.0f)
+            {
+                this.audioDevice.AudioEndpointVolume.Mute = true;
+            }
+            else
+            {
+                if (this.audioDevice.AudioEndpointVolume.Mute == true) this.audioDevice.AudioEndpointVolume.Mute = false;
+            }
             audioDevice.AudioEndpointVolume.MasterVolumeLevelScalar = volume;
             label_masterVolume.Text = trackBar_masterVolume.Value.ToString();
         }
