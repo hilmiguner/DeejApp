@@ -1,4 +1,6 @@
-﻿namespace DeejApp
+﻿using System.Diagnostics;
+
+namespace DeejApp
 {
     partial class MainScreen
     {
@@ -13,11 +15,12 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            Debug.Print(this.Disposing.ToString());
+            /*if (disposing && (components != null))
             {
                 components.Dispose();
             }
-            base.Dispose(disposing);
+            base.Dispose(disposing);*/
         }
 
         #region Windows Form Designer generated code
@@ -28,6 +31,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainScreen));
             this.label_sesSeviyesi = new System.Windows.Forms.Label();
             this.label_masterVolume = new System.Windows.Forms.Label();
@@ -46,6 +50,7 @@
             this.trackBar_processTwo = new System.Windows.Forms.TrackBar();
             this.pictureBox_processTwo = new System.Windows.Forms.PictureBox();
             this.comboBox_processTwo = new System.Windows.Forms.ComboBox();
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_masterVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_processOne)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_processOne)).BeginInit();
@@ -210,6 +215,13 @@
             this.comboBox_processTwo.TabIndex = 11;
             this.comboBox_processTwo.SelectedIndexChanged += new System.EventHandler(this.comboBox_processTwo_SelectedIndexChanged);
             // 
+            // notifyIcon
+            // 
+            this.notifyIcon.BalloonTipText = "Deej App Tip";
+            this.notifyIcon.BalloonTipTitle = "Deej App Title";
+            this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
+            this.notifyIcon.Text = "Deej App Text";
+            // 
             // MainScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -232,8 +244,10 @@
             this.Controls.Add(this.trackBar_masterVolume);
             this.Controls.Add(this.label_masterVolume);
             this.Controls.Add(this.label_sesSeviyesi);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainScreen";
             this.Text = "Deej App";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainScreen_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_masterVolume)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_processOne)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_processOne)).EndInit();
@@ -264,5 +278,6 @@
         private System.Windows.Forms.TrackBar trackBar_processTwo;
         private System.Windows.Forms.PictureBox pictureBox_processTwo;
         private System.Windows.Forms.ComboBox comboBox_processTwo;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
     }
 }

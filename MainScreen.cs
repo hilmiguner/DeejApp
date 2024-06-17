@@ -23,6 +23,12 @@ namespace DeejApp
         public MainScreen()
         {
             InitializeComponent();
+
+            ContextMenuStrip contextMenu = new ContextMenuStrip();
+            contextMenu.Items.Add("Open Deej App", null, showApp);
+            contextMenu.Items.Add("Close App", null, closeApp);
+            notifyIcon.ContextMenuStrip = contextMenu;
+
             deviceEnumerator = new MMDeviceEnumerator();
             audioDevice = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
             InitializeMasterVolumeSystem();
@@ -182,6 +188,27 @@ namespace DeejApp
             this.currentSessions[1].controller.SimpleAudioVolume.Volume = volume;
             updateTrackBarsByName(1, this.currentSessions[1].name, volume);
             updateLabels();
+        }
+
+        private void MainScreen_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                notifyIcon.Visible = true;
+                this.Hide();
+                e.Cancel = true;
+            }
+        }
+
+        private void showApp(object sender, EventArgs e)
+        { 
+            this.Show();
+        }
+
+        private void closeApp(object sender, EventArgs e)
+        {
+            notifyIcon.Visible=false;
+            Application.Exit();
         }
     }
 }
