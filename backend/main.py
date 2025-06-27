@@ -58,13 +58,13 @@ class DeejApp:
                         slider1 = Utility.normalize(data[0], out_max=1)
                         slider2 = Utility.normalize(data[1], out_max=1)
                         button1 = data[2]
-                        # button2 = data[3]
+                        button2 = data[3]
 
                         self.setMasterVolume(slider1)
                         self.setMicrophoneVolume(slider2)
                         
                         self.toggleMuteMasterVolume(button1)
-                        # self.toggleMuteMicrophone(button2)
+                        self.toggleMuteMicrophone(button2)
 
             except KeyboardInterrupt:
                 print("Program sonlandırıldı.")

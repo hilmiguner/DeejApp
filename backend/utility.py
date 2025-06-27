@@ -13,7 +13,7 @@ class Utility:
         print(line)
         try:
             parts = line.strip().split('|')
-            inputParts = [int(parts[0]), int(parts[1]), str(parts[2])]
+            inputParts = [int(parts[0]), int(parts[1]), str(parts[2]), str(parts[3])]
             return inputParts
         except Exception as err:
             print(f"Parse Hatası: {err}")
