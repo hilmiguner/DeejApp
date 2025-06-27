@@ -1,35 +1,51 @@
-import serial
-import time
+import asyncio
 import serial.tools.list_ports
+import serial_asyncio
 
-class SerialPort:
-    def __init__(self):
-        pass
+class SerialHandler(asyncio.Protocol):
+    def __init__(self, on_data_callback):
+        self.on_data_callback = on_data_callback
+        self.buffer = ""
+    
+    def connection_made(self, transport):
+        print(f"[Serial] Bağlantı kuruldu: {transport}")
+        self.transport = transport
 
-    def openSerialPort(self, port: str, baud: int):
+    def data_received(self, data):
         try:
-            self.ser = serial.Serial(port, baud, timeout=1)
-            time.sleep(2)
-            print(f"{port} üzerinden veri bekleniyor...")
-        except serial.SerialException as e:
-            print(f"Port açılamadı: {e}")
+            text = data.decode('utf-8', errors='ignore')
+            self.buffer += text
+            if '\n' in self.buffer:
+                lines = self.buffer.split('\n')
+                for line in lines[:-1]:
+                    self.on_data_callback(line.strip())
+                self.buffer = lines[-1]
+        except Exception as e:
+            print(f"[Serial] Okuma hatası: {e}")
 
-    def findPort(self, keyword="DEEJ_DEVICE_READY", baudrate=9600, timeout=3):
-        ports = serial.tools.list_ports.comports()
-        for port in ports:
-            try:
-                print(f"Port deneniyor: {port.device}")
-                with serial.Serial(port.device, baudrate=baudrate, timeout=timeout) as ser:
-                    ser.reset_input_buffer()
-                    time.sleep(2.5)
-                    for _ in range(5):
-                        line = ser.readline().decode('utf-8', errors='ignore').strip()
-                        print(f"Gelen: {line}")
-                        if keyword in line:
-                            print(f"✔ Arduino bulundu: {port.device}")
-                            return port.device
-            except Exception as e:
-                print(f"Hata ({port.device}): {e}")
-        print("❌ Uygun Arduino cihazı bulunamadı.")
-        return None
+    def connection_lost(self, exc):
+        print(f"[Serial] Bağlantı kesildi: {exc}")
 
+
+async def find_serial_port(keyword="DEEJ_DEVICE_READY", baudrate=9600, timeout=3):
+    ports = serial.tools.list_ports.comports()
+    for port in ports:
+        try:
+            print(f"[Port Taraması] {port.device} kontrol ediliyor...")
+            reader, writer = await serial_asyncio.open_serial_connection(url=port.device, baudrate=baudrate)
+            await asyncio.sleep(2)
+            for _ in range(5):
+                line = await reader.readline()
+                text = line.decode('utf-8', errors='ignore').strip()
+                print(f"Gelen: {text}")
+                if keyword in text:
+                    print(f"✔ Arduino bulundu: {port.device}")
+                    writer.close()
+                    await writer.wait_closed()
+                    return port.device
+            writer.close()
+            await writer.wait_closed()
+        except Exception as e:
+            print(f"[Hata - {port.device}] {e}")
+    print("❌ Uygun Arduino cihazı bulunamadı.")
+    return None

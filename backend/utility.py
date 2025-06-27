@@ -1,3 +1,5 @@
+import json
+
 class Utility:
     @staticmethod
     def normalize(value, out_min=0.0, out_max=1.0, dead_zone_low=5, dead_zone_high=1018):
@@ -10,7 +12,6 @@ class Utility:
 
     @staticmethod
     def parseInputData(line: str):
-        print(line)
         try:
             parts = line.strip().split('|')
             inputParts = [int(parts[0]), int(parts[1]), str(parts[2]), str(parts[3])]
@@ -18,3 +19,12 @@ class Utility:
         except Exception as err:
             print(f"Parse Hatası: {err}")
             return None
+        
+    @staticmethod
+    def createBroadcastJson(slider1, slider2, button1, button2):
+        return json.dumps({
+            "masterVolume": slider1,
+            "micVolume": slider2,
+            "masterMute": button1,
+            "micMute": button2
+        })
