@@ -1,5 +1,5 @@
 import asyncio
-from serialPort import SerialHandler, find_serial_port
+from serialPort import SerialHandler, find_serial_port_and_device_info
 from websocketServer import WebSocketServer
 from utility import Utility
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
@@ -42,7 +42,7 @@ class DeejApp:
             volume.SetMute(False, None)
 
     async def start(self):
-        port = await find_serial_port()
+        port, deviceId = await find_serial_port_and_device_info()
         if not port:
             return
 
@@ -67,7 +67,7 @@ class DeejApp:
         loop = asyncio.get_running_loop()
         await serial_asyncio.create_serial_connection(loop, lambda: SerialHandler(handle_serial_data), port, baudrate=9600)
         print("[Uygulama] Başlatıldı.")
-        await asyncio.Future()  # Sonsuz çalış
+        await asyncio.Future()
 
 if __name__ == "__main__":
     asyncio.run(DeejApp().start())

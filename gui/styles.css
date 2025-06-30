@@ -43,6 +43,10 @@ h1 {
   transition: background-color 0.3s ease;
 }
 
+.card:hover {
+  background-color: #747272;
+}
+
 .card span {
   font-weight: bold;
   margin-left: 0.5rem;
@@ -54,10 +58,10 @@ h1 {
 }
 
 .mute span.MUTE_ON {
-  color: #f44336; /* Kırmızı */
+  color: #f44336;
 }
 
 .mute span.MUTE_OFF {
-  color: #4caf50; /* Yeşil */
+  color: #4caf50;
 }
 
