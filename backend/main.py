@@ -48,8 +48,10 @@ class DeejApp:
 
         await self.ws_server.start()
 
+        Utility.log("[WebSocket] WebSocket server has been started.")
+
         def handle_serial_data(line):
-            print(f"[Serial] Veri: {line}")
+            # Utility.log(f"[Serial] Data: {line}")
             data = Utility.parseInputData(line)
             if data:
                 slider1 = Utility.normalize(data[0])
@@ -65,9 +67,14 @@ class DeejApp:
                 asyncio.create_task(self.ws_server.broadcast(Utility.createBroadcastJson(slider1, slider2, button1, button2)))  # Electron'a veri gönder
 
         loop = asyncio.get_running_loop()
-        await serial_asyncio.create_serial_connection(loop, lambda: SerialHandler(handle_serial_data), port, baudrate=9600)
-        print("[Uygulama] Başlatıldı.")
+
+        serialTransport, _ = await serial_asyncio.create_serial_connection(loop, lambda: SerialHandler(handle_serial_data), port, baudrate=9600)
+        self.ws_server.serialTransport = serialTransport
+        Utility.log("[App] Has been started.")
         await asyncio.Future()
 
+
 if __name__ == "__main__":
+    Utility.check_backend_update(local_path="backend/version.json", remote_url="https://hilmiguner.github.io/deejapp-updates/versions.json")
+
     asyncio.run(DeejApp().start())

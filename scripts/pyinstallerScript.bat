@@ -1,0 +1,1 @@
+.venv\Scripts\pyinstaller.exe --clean --onefile --name deej-backend.exe --specpath backend --distpath backend\dist --workpath backend\build backend\main.py

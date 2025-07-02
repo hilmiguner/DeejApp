@@ -1,23 +1,59 @@
 const { app, BrowserWindow } = require('electron');
+const WebSocket = require('ws');
 const path = require('path');
+const { spawn } = require('child_process');
+const kill = require('tree-kill');
 
-function createWindow () {
-  const win = new BrowserWindow({
-    width: 500,
-    height: 500
+let win = null;
+
+let backendProcess = null;
+
+function createWindow() {
+  win = new BrowserWindow({
+    width: 400,
+    height: 500,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    }
   });
 
-  win.loadFile('index.html');
+  const backendPath = path.join(__dirname, '../backend/dist/deej-backend.exe');
+  backendProcess = spawn(backendPath, [], { stdio: ['pipe', 'pipe', 'pipe'] });
+
+  backendProcess.stdout.on('data', (data) => {
+    if (data.toString().includes("WebSocket server has been started.")) {
+      win.loadFile("gui/index.html");
+    }
+    console.log(`[Electron] Backend stdin: ${data.toString("utf8")}`);
+  });
+
+  backendProcess.stderr.on('data', (data) => {
+    if(!data.toString().includes("SystemExit")) {
+      console.error(`[Electron] Backend error: ${data.toString("utf8")}`);
+    }
+  });
+
+  backendProcess.on('close', (code, signal) => {
+    console.log(`[Electron] Backend has been closed (kod: ${code}) (signal: ${signal})`);
+  });
 }
 
-app.whenReady().then(() => {
-  createWindow();
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
+app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+  const ws = new WebSocket('ws://localhost:8765');
+  ws.on('open', () => {
+    ws.send('shutdown');
+    ws.close();
+  });
+  ws.on('error', (err) => {
+    console.error("[Electron] WebSocket connection error:", err);
+  });
+  setTimeout(() => {
+    kill(backendProcess.pid);
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  }, 3000);
 });

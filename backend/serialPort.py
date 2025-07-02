@@ -1,6 +1,7 @@
 import asyncio
 import serial.tools.list_ports
 import serial_asyncio
+from utility import Utility
 
 class SerialHandler(asyncio.Protocol):
     def __init__(self, on_data_callback):
@@ -8,7 +9,7 @@ class SerialHandler(asyncio.Protocol):
         self.buffer = ""
     
     def connection_made(self, transport):
-        print(f"[Serial] Bağlantı kuruldu: {transport}")
+        Utility.log(f"[Serial] Connected: {transport}")
         self.transport = transport
 
     def data_received(self, data):
@@ -21,10 +22,10 @@ class SerialHandler(asyncio.Protocol):
                     self.on_data_callback(line.strip())
                 self.buffer = lines[-1]
         except Exception as e:
-            print(f"[Serial] Okuma hatası: {e}")
+            Utility.log(f"[Serial] Reading error: {e}")
 
     def connection_lost(self, exc):
-        print(f"[Serial] Bağlantı kesildi: {exc}")
+        Utility.log(f"[Serial] Disconnected: {exc}")
 
 
 async def find_serial_port_and_device_info(keyword="DEEJ_DEVICE_READY", baudrate=9600, timeout=3):
@@ -32,34 +33,34 @@ async def find_serial_port_and_device_info(keyword="DEEJ_DEVICE_READY", baudrate
 
     for port in ports:
         try:
-            print(f"[Port Taraması] {port.device} kontrol ediliyor...")
+            Utility.log(f"[Port Scan] Checking {port.device} ...")
             for _ in range(5):
                 reader, writer = await serial_asyncio.open_serial_connection(url=port.device, baudrate=baudrate)
                 await asyncio.sleep(2)
 
                 line = await reader.readline()
                 text = line.decode('utf-8', errors='ignore').strip()
-                print(f"Gelen: {text}")
+                Utility.log(f"[Port Scan] Data: {text}")
 
                 if keyword in text:
                     parts = text.split('|')
                     if len(parts) >= 2 and len(parts[1]) == 8:
                         device_id = parts[1]
-                        print(f"✔ Arduino bulundu: {port.device} | Cihaz Kodu: {device_id}")
+                        Utility.log(f"[Port Scan] Arduino found: {port.device} | Device ID: {device_id}")
                         return port.device, device_id
                     else:
-                        print(f"[Uyarı] Cihaz ID'si ayrıştırılamadı.")
+                        Utility.log(f"[Port Scan] Data is not in the correct form.")
             
                 writer.close()
                 await writer.wait_closed()
 
         except Exception as e:
-            print(f"[Hata - {port.device}] {e}")
+            Utility.log(f"[Port Scan] Error: {port.device} {e}")
 
         finally:
             writer.close()
             await writer.wait_closed()
 
-    print("❌ Uygun Arduino cihazı bulunamadı.")
+    Utility.log("[Port Scan] Couldn't find the Arduino.")
     return None, None
 
