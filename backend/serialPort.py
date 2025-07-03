@@ -9,7 +9,7 @@ class SerialHandler(asyncio.Protocol):
         self.buffer = ""
     
     def connection_made(self, transport):
-        Utility.log(f"[Serial] Connected: {transport}")
+        Utility.log(f"[Serial] Connected: {transport.serial.port}")
         self.transport = transport
 
     def data_received(self, data):

@@ -1,5 +1,4 @@
 const { app, BrowserWindow } = require('electron');
-const WebSocket = require('ws');
 const path = require('path');
 const { spawn } = require('child_process');
 const kill = require('tree-kill');
@@ -42,14 +41,6 @@ function createWindow() {
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
-  const ws = new WebSocket('ws://localhost:8765');
-  ws.on('open', () => {
-    ws.send('shutdown');
-    ws.close();
-  });
-  ws.on('error', (err) => {
-    console.error("[Electron] WebSocket connection error:", err);
-  });
   setTimeout(() => {
     kill(backendProcess.pid);
     if (process.platform !== 'darwin') {

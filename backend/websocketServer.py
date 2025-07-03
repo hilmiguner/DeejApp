@@ -15,13 +15,12 @@ class WebSocketServer:
         Utility.log(f"[WebSocket] New connection: {websocket.remote_address}")
         try:
             async for msg in websocket:
-                Utility.log(msg)
-                if msg == "shutdown":
-                    self.serialTransport.close()
-                    sys.exit()
+                pass
         finally:
             self.clients.remove(websocket)
             Utility.log(f"[WebSocket] Disconnected: {websocket.remote_address}")
+            self.serialTransport.close()
+            sys.exit()
 
     async def start(self, port=8765):
         Utility.log(f"[WebSocket] Server is starting...")

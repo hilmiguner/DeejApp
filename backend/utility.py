@@ -19,7 +19,10 @@ class Utility:
             inputParts = [int(parts[0]), int(parts[1]), str(parts[2]), str(parts[3])]
             return inputParts
         except Exception as err:
-            Utility.log(f"Parse Error: {err}")
+            if "invalid literal for int() with base 10" in str(err):
+                pass
+            else:
+                Utility.log(f"[Parsing Data] Error: {err}")
             return None
         
     @staticmethod
