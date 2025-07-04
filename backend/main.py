@@ -51,7 +51,6 @@ class DeejApp:
         Utility.log("[WebSocket] WebSocket server has been started.")
 
         def handle_serial_data(line):
-            # Utility.log(f"[Serial] Data: {line}")
             data = Utility.parseInputData(line)
             if data:
                 slider1 = Utility.normalize(data[0])
@@ -75,6 +74,4 @@ class DeejApp:
 
 
 if __name__ == "__main__":
-    Utility.check_backend_update(local_path="backend/version.json", remote_url="https://hilmiguner.github.io/deejapp-updates/versions.json")
-
     asyncio.run(DeejApp().start())

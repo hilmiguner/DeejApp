@@ -1,6 +1,4 @@
 import json
-import requests
-import os
 
 class Utility:
     @staticmethod
@@ -33,30 +31,6 @@ class Utility:
             "masterMute": button1,
             "micMute": button2
         })
-    
-    @staticmethod
-    def check_backend_update(local_path="version.json", remote_url="https://yourdomain.com/backend/versions.json"):
-        try:
-            with open(os.path.join(os.getcwd(), local_path), "r") as f:
-                local_data = json.load(f)
-                local_version = local_data["backendVersion"]
-
-            response = requests.get(remote_url, timeout=5)
-            if response.status_code != 200:
-                Utility.log("[Update] Couldn't fetch version information.")
-                return
-
-            remote_data = response.json()
-            remote_version = remote_data["backendVersion"]
-
-            if remote_version != local_version:
-                Utility.log(f"[Update] New version is available: {remote_version} (current: {local_version})")
-                # Burada istersen indirme işlemini başlatabilirsin
-            else:
-                Utility.log("[Update] Current version is up to date.")
-
-        except Exception as e:
-            Utility.log(f"[Update] Error on version check: {e}")
 
     @staticmethod
     def log(text):
