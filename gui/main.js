@@ -1,7 +1,12 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
-const { spawn } = require('child_process');
-const kill = require('tree-kill');
+import { app, BrowserWindow } from 'electron';
+import { dirname, join } from 'path';
+import { spawn } from 'child_process';
+import kill from 'tree-kill';
+import isDev from 'electron-is-dev';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 let win = null;
 
@@ -17,7 +22,9 @@ function createWindow() {
     }
   });
 
-  const backendPath = path.join(__dirname, '../backend/dist/deej-backend.exe');
+  const exeDir = dirname(app.getPath('exe'));
+  const backendPath = isDev ? join(__dirname, '../backend/dist/deej-backend.exe') : join(exeDir, 'resources/deej-backend.exe');
+
   backendProcess = spawn(backendPath, [], { stdio: ['pipe', 'pipe', 'pipe'] });
 
   backendProcess.stdout.on('data', (data) => {

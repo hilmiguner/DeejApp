@@ -5,3 +5,4 @@ node_modules/
 backend/build
 backend/dist
 backend/deej-backend.exe.spec
+release

@@ -1,7 +1,10 @@
 {
   "name": "deejapp",
   "version": "0.1.0",
+  "description": "DeejApp Demo",
+  "author": "hilmiguner",
   "main": "gui/main.js",
+  "type": "module",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder"
@@ -11,7 +14,6 @@
     "productName": "DeejApp",
     "files": [
       "gui/**/*",
-      "backend/dist/**/*",
       "backend/version.json"
     ],
     "extraResources": [
@@ -26,10 +28,20 @@
     "win": {
       "target": "nsis",
       "icon": "gui/icon.ico"
+    },
+    "nsis": {
+      "include": "installer/installer.nsh",
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
     }
   },
   "devDependencies": {
     "electron": "^28.1.0",
     "electron-builder": "^24.13.0"
+  },
+  "dependencies": {
+    "electron-is-dev": "^3.0.1",
+    "tree-kill": "^1.2.2"
   }
 }
