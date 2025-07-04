@@ -1,19 +1,5 @@
 const { ipcRenderer, shell } = require('electron');
 
-ipcRenderer.on('update-available', (event, data) => {
-  const confirmUpdate = confirm(
-    `Yeni sürüm mevcut!\n\nMevcut: v${data.currentVersion}\nYeni: v${data.latestVersion}\n\n${data.releaseNotes}\n\nGüncellemeyi indirmek ister misiniz?`
-  );
-
-  if (confirmUpdate) {
-    shell.openExternal(data.downloadUrl).then(() => {
-      ipcRenderer.send('exit-app');
-      return;
-    });
-  }
-  ipcRenderer.send('exit-app');
-});
-
 const ws = new WebSocket('ws://localhost:8765');
 
 ws.onopen = () => {
@@ -33,3 +19,21 @@ ws.onmessage = (event) => {
 ws.onclose = () => {
   console.log("[Electron] Disconnected from WebSocket server.");
 };
+
+ipcRenderer.on('update-available', (event, data) => {
+  const confirmUpdate = confirm(
+    `Yeni sürüm mevcut!\n\nMevcut: v${data.currentVersion}\nYeni: v${data.latestVersion}\n\n${data.releaseNotes}\n\nGüncellemeyi indirmek ister misiniz?`
+  );
+
+  if (confirmUpdate) {
+    shell.openExternal(data.downloadUrl).then(() => {
+      ws.close();
+      ipcRenderer.send('exit-app');
+      return;
+    });
+  }
+  else {
+    ws.close();
+    ipcRenderer.send('exit-app');
+  }
+});
